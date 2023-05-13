@@ -98,26 +98,27 @@ def sorting(path):
     return "Sorting was done"
 
 # Function to delete empty dirs
-# def deleting_empty_dir(path):
-#     for item in os.listdir(path):
-#         file_path = os.path.join(path, item)
-#         if os.path.isdir(os.path.join(path, item)) == path_for_sorting:
-#             continue
-#         elif os.path.exists(file_path):
-#                 os.remove(file_path)
-        # elif item == ['.DS_Store']:
-        #     os.rmdir(path)
-        # elif len(item) == 0:
-        #     os.rmdir(path)            
-        # else:
-        #     os.path.isdir(os.path.join(path, item))
-        #     deleting_empty_dir(os.path.join(path, item))
+def delete_empty_directories(path):
+    
+    sorted_dir = path_for_sorting
+    
+    for dir_name in os.listdir(path):
+        dir_path = os.path.join(path, dir_name)
+        
+        if dir_path == sorted_dir:
+            continue
+        
+        if os.path.isdir(dir_path):
+            delete_empty_directories(dir_path)
+        
+        if not os.listdir(dir_path) or os.listdir(dir) == ['.DS_Store']:
+            os.rmdir(dir_path)
     
 #Full working script
 def full_sort(path):
     renaming(path)
     sorting(path)
-    # deleting_empty_dir(path)
+    delete_empty_directories(path)
     return 'Everything was done'
       
                     
