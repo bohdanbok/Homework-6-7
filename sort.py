@@ -6,9 +6,6 @@ documents = ['.DOC', '.DOCX', '.TXT', '.PDF', '.XLSX', '.PPTX']
 audio = ['.MP3', '.OGG', '.WAV', '.AMR']
 archives = ['.ZIP', '.GZ', '.TAR']
 
-path = sys.argv[1]
-path_for_sorting = os.path.join(path,'Sorted/')
-
 transliteration_table = {
     "А": "A", "Б": "B", "В": "V", "Г": "G", "Д": "D", "Е": "E", "Ё": "E", "Ж": "ZH",
     "З": "Z", "И": "I", "Й": "Y", "К": "K", "Л": "L", "М": "M", "Н": "N", "О": "O",
@@ -22,14 +19,24 @@ transliteration_table = {
     "*": "_", "(": "_", ")": "_", "+": "_", "=": "_", "{": "_", "}": "_", "[": "_", "]": "_", ";": "_",
     ":": "_", ",": "_", "<": "_", ">": "_", "?": "_", "/": "_", "\\": "_", "|": "_", "№": "_", " ": "_",
 }
+path = sys.argv[1]
+
 
 #Creating all directories with their paths
-dir_path_pics = os.path.join(path_for_sorting + 'Pictures/')
-dir_path_vid = os.path.join(path_for_sorting + 'Video/')
-dir_path_docs = os.path.join(path_for_sorting + 'Documents/')
-dir_path_aud = os.path.join(path_for_sorting + 'Audio/')
-dir_path_arch = os.path.join(path_for_sorting + 'Archives/')
-dir_path_other = os.path.join(path_for_sorting + 'Other/')
+path_for_sorting = os.path.join(path,'Sorted/')
+os.makedirs(path_for_sorting)
+dir_path_pics = os.path.join(path_for_sorting + 'Pictures')
+os.makedirs(dir_path_pics)
+dir_path_vid = os.path.join(path_for_sorting + 'Video')
+os.makedirs(dir_path_vid)
+dir_path_docs = os.path.join(path_for_sorting + 'Documents')
+os.makedirs(dir_path_docs)
+dir_path_aud = os.path.join(path_for_sorting + 'Audio')
+os.makedirs(dir_path_aud)
+dir_path_arch = os.path.join(path_for_sorting + 'Archives')
+os.makedirs(dir_path_arch)
+dir_path_other = os.path.join(path_for_sorting + 'Other')
+os.makedirs(dir_path_other)
       
 #Function to normalize name of file
 def normalize(name,format):
@@ -45,8 +52,12 @@ def normalize(name,format):
 #Function to raname files
 def renaming(path):
     for item in os.listdir(path):
-        if os.path.isdir(os.path.join(path, item)):
+        if os.path.isdir(os.path.join(path, item)) and item == 'Sorted/':
+            continue
+        elif os.path.isdir(os.path.join(path, item)):
             renaming(os.path.join(path, item))
+        elif os.path.isfile(os.path.join(path, item)) and item =='.DS_Store':
+            continue
         elif os.path.isfile(os.path.join(path, item)):
             name, format = os.path.splitext(item)
             if any(ord(char) > 127 for char in name):
@@ -60,10 +71,12 @@ def renaming(path):
 #Function to sort files                
 def sorting(path):
     for item in os.listdir(path):
-        if os.path.isdir(os.path.join(path, item)) == path_for_sorting:
+        if os.path.isdir(os.path.join(path, item)) and item == 'Sorted/':
             continue
         elif os.path.isdir(os.path.join(path, item)):
             sorting(os.path.join(path, item))
+        elif os.path.isfile(os.path.join(path, item)) and item =='.DS_Store':
+            continue
         elif os.path.isfile(os.path.join(path, item)):
             name, format = os.path.splitext(item)   
             file_path = os.path.join(path, item)            
@@ -84,22 +97,27 @@ def sorting(path):
                 shutil.move(file_path, dir_path_other)
     return "Sorting was done"
 
-#Function to delete empty dirs
-def deleting_empty_dir(path):
-    for item in os.listdir(path):
-        if os.path.isdir(os.path.join(path, item)) == path_for_sorting:
-            continue
-        elif len(item) == 0:
-            os.rmdir(path)            
-        else:
-            os.path.isdir(os.path.join(path, item))
-            deleting_empty_dir(os.path.join(path, item))
+# Function to delete empty dirs
+# def deleting_empty_dir(path):
+#     for item in os.listdir(path):
+#         file_path = os.path.join(path, item)
+#         if os.path.isdir(os.path.join(path, item)) == path_for_sorting:
+#             continue
+#         elif os.path.exists(file_path):
+#                 os.remove(file_path)
+        # elif item == ['.DS_Store']:
+        #     os.rmdir(path)
+        # elif len(item) == 0:
+        #     os.rmdir(path)            
+        # else:
+        #     os.path.isdir(os.path.join(path, item))
+        #     deleting_empty_dir(os.path.join(path, item))
     
 #Full working script
 def full_sort(path):
     renaming(path)
     sorting(path)
-    deleting_empty_dir(path)
+    # deleting_empty_dir(path)
     return 'Everything was done'
       
                     
